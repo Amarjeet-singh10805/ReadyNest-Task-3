@@ -30,7 +30,7 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        imgSrc: ["'self'", "data:", "blob:", "https://res.cloudinary.com", "https://ui-avatars.com"],
+        imgSrc: ["'self'", "data:", "blob:", "https://res.cloudinary.com", "https://ui-avatars.com", "https://images.unsplash.com", "https://picsum.photos"],
         connectSrc: ["'self'", "https://res.cloudinary.com"],
         scriptSrc: ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
