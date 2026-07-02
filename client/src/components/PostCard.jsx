@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Heart, MessageCircle, Bookmark, Trash2 } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, Trash2, Send, Link2 } from "lucide-react";
+import { useState } from "react";
+import SharePostModal from "./SharePostModal";
 import { formatDistanceToNow } from "date-fns";
 import toast from "react-hot-toast";
 import api from "../services/api";
@@ -13,11 +15,16 @@ export default function PostCard({ post, onDelete }) {
   const [likedByMe, setLikedByMe] = useState(post.likedByMe);
   const [savedByMe, setSavedByMe] = useState(post.savedByMe);
   const [commentsCount, setCommentsCount] = useState(post.commentsCount);
-
+  const [showShare, setShowShare] = useState(false);
   useEffect(() => {
     const socket = getSocket();
     const onLikeUpdate = ({ postId, likesCount: count }) => {
       if (postId === post.id) setLikesCount(count);
+    };
+    const copyLink = () => {
+      const url = `${window.location.origin}/post/${post.id}`;
+      navigator.clipboard.writeText(url);
+      toast.success("Link copied!");
     };
     const onComment = ({ postId }) => {
       if (postId === post.id) setCommentsCount((c) => c + 1);
