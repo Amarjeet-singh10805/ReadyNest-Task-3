@@ -28,15 +28,19 @@ export default function MessagesPage() {
 
   useEffect(() => {
     if (!convoId) return;
-    fetchMessages(Number(convoId));
+    const id = Number(convoId);
+    // set activeConvo so receiveMessage condition works
+    const convo = conversations.find((c) => c.id === id);
+    if (convo) useMessageStore.getState().activeConvo = convo;
+    fetchMessages(id);
     const socket = getSocket();
-    socket.emit("joinConvo", Number(convoId));
+    socket.emit("joinConvo", id);
     socket.on("newMessage", receiveMessage);
     return () => {
-      socket.emit("leaveConvo", Number(convoId));
+      socket.emit("leaveConvo", id);
       socket.off("newMessage", receiveMessage);
     };
-  }, [convoId]);
+  }, [convoId, conversations]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
