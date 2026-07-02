@@ -36,6 +36,15 @@ export const initSocket = (server, allowedOrigin) => {
       onlineUsers.set(socket.userId, socket.id);
     }
 
+    // DM conversation rooms
+    socket.on("joinConvo", (convoId) => {
+      socket.join(`convo:${convoId}`);
+    });
+
+    socket.on("leaveConvo", (convoId) => {
+      socket.leave(`convo:${convoId}`);
+    });
+
     socket.on("disconnect", () => {
       if (socket.userId) onlineUsers.delete(socket.userId);
     });
