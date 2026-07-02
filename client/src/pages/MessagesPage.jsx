@@ -38,7 +38,7 @@ export default function MessagesPage() {
     socket.on("newMessage", receiveMessage);
     return () => {
       socket.emit("leaveConvo", id);
-      socket.off("newMessage", receiveMessage);
+      socket.on("newMessage", (msg) => receiveMessage(msg, user?.id));
     };
   }, [convoId, conversations]);
 
@@ -48,8 +48,9 @@ export default function MessagesPage() {
 
   const handleSend = async () => {
     if (!text.trim() || !convoId) return;
-    await sendMessage(Number(convoId), { text });
-    setText("");
+    const trimmed = text.trim();
+    setText(""); // clear immediately for better UX
+    await sendMessage(Number(convoId), { text: trimmed });
   };
 
   const getOtherUser = (convo) =>
