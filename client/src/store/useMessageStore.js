@@ -37,11 +37,19 @@ export const useMessageStore = create((set, get) => ({
     set((s) => ({ messages: [...s.messages, data] }));
   },
 
-  receiveMessage: (msg) => {
-    const { activeConvo } = get();
-    if (activeConvo && msg.conversationId === activeConvo.id) {
+  // REPLACE WITH:
+receiveMessage: (msg) => {
+    const convoId = Number(window.location.pathname.split("/messages/")[1]);
+    // only add to messages array if we're currently viewing that conversation
+    if (convoId && msg.conversationId === convoId) {
       set((s) => ({ messages: [...s.messages, msg] }));
     }
+    // always update sidebar preview
+    set((s) => ({
+      conversations: s.conversations.map((c) =>
+        c.id === msg.conversationId ? { ...c, messages: [msg] } : c
+      ),
+    }));
   },
 
   closeConversation: () => set({ activeConvo: null, messages: [] }),
