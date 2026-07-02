@@ -3,6 +3,8 @@ import { useParams, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../services/api";
 import { useAuthStore } from "../store/useAuthStore";
+import { useNavigate } from "react-router-dom";
+import { useMessageStore } from "../store/useMessageStore";
 
 export default function ProfilePage() {
   const { id } = useParams();
@@ -10,7 +12,12 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const navigate = useNavigate();
+  const { openConversation } = useMessageStore();
+  const handleMessage = async () => {
+  const convo = await openConversation(profile.id);
+  navigate(`/messages/${convo.id}`);
+  };
   const isOwnProfile = me?.id === Number(id);
 
   const load = async () => {
@@ -78,6 +85,11 @@ export default function ProfilePage() {
                 }`}
               >
                 {profile.isFollowing ? "Following" : "Follow"}
+              </button>
+            )}
+            {user?.id !== profile?.id && (
+              <button onClick={handleMessage} className="px-4 py-1.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-semibold">
+                Message
               </button>
             )}
           </div>
