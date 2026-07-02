@@ -8,10 +8,13 @@ export const useMessageStore = create((set, get) => ({
   loading: false,
 
   fetchConversations: async () => {
+  try {
     const { data } = await api.get("/messages");
     set({ conversations: data });
+  } catch (err) {
+    console.error("fetchConversations error:", err);
+  }
   },
-
   openConversation: async (userId) => {
     const { data } = await api.post(`/messages/with/${userId}`);
     set({ activeConvo: data });
@@ -19,9 +22,14 @@ export const useMessageStore = create((set, get) => ({
   },
 
   fetchMessages: async (convoId) => {
+  try {
     set({ loading: true });
     const { data } = await api.get(`/messages/${convoId}/messages`);
     set({ messages: data, loading: false });
+  } catch (err) {
+    set({ loading: false });
+    console.error("fetchMessages error:", err);
+  }
   },
 
   sendMessage: async (convoId, payload) => {
