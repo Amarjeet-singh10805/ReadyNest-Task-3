@@ -18,7 +18,7 @@ import NotificationsPage from "./pages/NotificationsPage";
 import CreatePostPage from "./pages/CreatePostPage";
 import FollowListPage from "./pages/FollowListPage";
 import NotFoundPage from "./pages/NotFoundPage";
-
+import MessagesPage from "./pages/MessagesPage";
 function App() {
   const { user, checkAuth } = useAuthStore();
   const { addNotification } = useNotificationStore();
@@ -50,6 +50,8 @@ function App() {
           <Route path="/search" element={<SearchPage />} />
           <Route path="/create" element={<CreatePostPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/messages" element={<MessagesPage />} />
+          <Route path="/messages/:convoId" element={<MessagesPage />} />
           <Route path="/saved" element={<SavedPostsPage />} />
           <Route path="/profile/edit" element={<EditProfilePage />} />
           <Route path="/profile/:id" element={<ProfilePage />} />
