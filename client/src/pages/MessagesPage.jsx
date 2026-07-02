@@ -27,20 +27,22 @@ export default function MessagesPage() {
   }, [fetchConversations]);
 
   useEffect(() => {
-    if (!convoId) return;
-    const id = Number(convoId);
-    // set activeConvo so receiveMessage condition works
-    const convo = conversations.find((c) => c.id === id);
-    if (convo) useMessageStore.getState().activeConvo = convo;
-    fetchMessages(id);
-    const socket = getSocket();
-    socket.emit("joinConvo", id);
-    socket.on("newMessage", receiveMessage);
-    return () => {
-      socket.emit("leaveConvo", id);
-      socket.on("newMessage", (msg) => receiveMessage(msg, user?.id));
-    };
-  }, [convoId, conversations]);
+  if (!convoId) return;
+  const id = Number(convoId);
+  const convo = conversations.find((c) => c.id === id);
+  if (convo) useMessageStore.getState().activeConvo = convo;
+  fetchMessages(id);
+  const socket = getSocket();
+  socket.emit("joinConvo", id);
+
+  const handleNewMessage = (msg) => receiveMessage(msg, user?.id);
+  socket.on("newMessage", handleNewMessage);
+
+  return () => {
+    socket.emit("leaveConvo", id);
+    socket.off("newMessage", handleNewMessage); // ✅ .off to actually remove listener
+  };
+}, [convoId, conversations]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
