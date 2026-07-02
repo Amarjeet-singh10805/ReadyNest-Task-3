@@ -1,23 +1,19 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../services/api";
 import { useAuthStore } from "../store/useAuthStore";
-import { useNavigate } from "react-router-dom";
 import { useMessageStore } from "../store/useMessageStore";
 
 export default function ProfilePage() {
   const { id } = useParams();
   const { user: me } = useAuthStore();
+  const { openConversation } = useMessageStore();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-  const { openConversation } = useMessageStore();
-  const handleMessage = async () => {
-  const convo = await openConversation(profile.id);
-  navigate(`/messages/${convo.id}`);
-  };
+
   const isOwnProfile = me?.id === Number(id);
 
   const load = async () => {
@@ -55,6 +51,15 @@ export default function ProfilePage() {
     }
   };
 
+  const handleMessage = async () => {
+    try {
+      const convo = await openConversation(Number(id));
+      navigate(`/messages/${convo.id}`);
+    } catch (err) {
+      toast.error("Could not open conversation");
+    }
+  };
+
   if (loading) return <p className="text-center mt-20">Loading...</p>;
   if (!profile) return <p className="text-center mt-20">User not found</p>;
 
@@ -66,7 +71,7 @@ export default function ProfilePage() {
           className="w-20 h-20 md:w-32 md:h-32 rounded-full object-cover"
         />
         <div className="flex-1">
-          <div className="flex items-center gap-4 mb-3">
+          <div className="flex items-center gap-3 mb-3 flex-wrap">
             <h2 className="text-xl font-semibold">{profile.username}</h2>
             {isOwnProfile ? (
               <Link
@@ -76,21 +81,24 @@ export default function ProfilePage() {
                 Edit profile
               </Link>
             ) : (
-              <button
-                onClick={toggleFollow}
-                className={`px-4 py-1.5 rounded-lg text-sm font-semibold ${
-                  profile.isFollowing
-                    ? "border border-gray-300 dark:border-gray-700"
-                    : "bg-brand-500 text-white"
-                }`}
-              >
-                {profile.isFollowing ? "Following" : "Follow"}
-              </button>
-            )}
-            {user?.id !== profile?.id && (
-              <button onClick={handleMessage} className="px-4 py-1.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-semibold">
-                Message
-              </button>
+              <>
+                <button
+                  onClick={toggleFollow}
+                  className={`px-4 py-1.5 rounded-lg text-sm font-semibold ${
+                    profile.isFollowing
+                      ? "border border-gray-300 dark:border-gray-700"
+                      : "bg-brand-500 text-white"
+                  }`}
+                >
+                  {profile.isFollowing ? "Following" : "Follow"}
+                </button>
+                <button
+                  onClick={handleMessage}
+                  className="px-4 py-1.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-semibold"
+                >
+                  Message
+                </button>
+              </>
             )}
           </div>
           <div className="flex gap-6 text-sm mb-3">
