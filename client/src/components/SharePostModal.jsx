@@ -24,20 +24,26 @@ export default function SharePostModal({ post, onClose }) {
       return n;
     });
 
-  const handleSend = async () => {
+  // REPLACE WITH:
+const handleSend = async () => {
     if (selected.size === 0) return;
     setSending(true);
-    try {
-      for (const userId of selected) {
+    let successCount = 0;
+    for (const userId of selected) {
+      try {
         const { data: convo } = await api.post(`/messages/with/${userId}`);
         await api.post(`/messages/${convo.id}/messages`, { postId: post.id });
+        successCount++;
+      } catch (err) {
+        console.error("Share failed for userId", userId, err);
       }
+    }
+    setSending(false);
+    if (successCount > 0) {
       toast.success("Post shared!");
       onClose();
-    } catch (e) {
+    } else {
       toast.error("Failed to share");
-    } finally {
-      setSending(false);
     }
   };
 
