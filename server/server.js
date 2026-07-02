@@ -15,6 +15,7 @@ import commentRoutes from "./routes/comment.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
 import { errorMiddleware, notFound } from "./middleware/error.middleware.js";
 import { initSocket } from "./socket/socket.js";
+import messageRoutes from "./routes/message.routes.js";
 
 dotenv.config();
 
@@ -64,7 +65,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/notifications", notificationRoutes);
-
+app.use("/api/messages", messageRoutes);
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 
 // Serve frontend build in production (single-service deploy option)
