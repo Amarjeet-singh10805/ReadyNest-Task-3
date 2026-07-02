@@ -1,4 +1,5 @@
 import { prisma } from "../config/prisma.js";
+import { getIO } from "../socket/socket.js";
 
 const userSelect = { id: true, username: true, profilePicture: true };
 
