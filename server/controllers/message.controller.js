@@ -91,6 +91,7 @@ export const getMessages = async (req, res, next) => {
 };
 
 // Send a message (text and/or post share)
+// REPLACE WITH:
 export const sendMessage = async (req, res, next) => {
   try {
     const myId = req.user.id;
@@ -104,19 +105,26 @@ export const sendMessage = async (req, res, next) => {
     });
     if (!member) return res.status(403).json({ message: "Not a participant" });
 
-    const [message] = await prisma.$transaction([
-      prisma.message.create({
-        data: { conversationId: convoId, senderId: myId, text: text || null, postId: postId || null },
-        include: {
-          sender: { select: userSelect },
-          post: { include: { user: { select: userSelect } } },
-        },
-      }),
-      prisma.conversation.update({ where: { id: convoId }, data: { updatedAt: new Date() } }),
-    ]);
+    // create message and update conversation separately so includes work correctly
+    const message = await prisma.message.create({
+      data: {
+        conversationId: convoId,
+        senderId: myId,
+        text: text || null,
+        postId: postId ? Number(postId) : null,
+      },
+      include: {
+        sender: { select: userSelect },
+        post: { include: { user: { select: userSelect } } },
+      },
+    });
 
-    // Emit via socket
-    req.app.get("io").to(`convo:${convoId}`).emit("newMessage", message);
+    await prisma.conversation.update({
+      where: { id: convoId },
+      data: { updatedAt: new Date() },
+    });
+
+    getIO().to(`convo:${convoId}`).emit("newMessage", message);
 
     res.status(201).json(message);
   } catch (err) {
