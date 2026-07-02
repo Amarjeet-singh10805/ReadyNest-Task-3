@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Heart, MessageCircle, Bookmark, Trash2, Send, Link2 } from "lucide-react";
-import { useState } from "react";
-import SharePostModal from "./SharePostModal";
 import { formatDistanceToNow } from "date-fns";
 import toast from "react-hot-toast";
 import api from "../services/api";
 import { getSocket } from "../services/socket";
 import { useAuthStore } from "../store/useAuthStore";
+import SharePostModal from "./SharePostModal";
 
 export default function PostCard({ post, onDelete }) {
   const { user } = useAuthStore();
@@ -16,15 +15,11 @@ export default function PostCard({ post, onDelete }) {
   const [savedByMe, setSavedByMe] = useState(post.savedByMe);
   const [commentsCount, setCommentsCount] = useState(post.commentsCount);
   const [showShare, setShowShare] = useState(false);
+
   useEffect(() => {
     const socket = getSocket();
     const onLikeUpdate = ({ postId, likesCount: count }) => {
       if (postId === post.id) setLikesCount(count);
-    };
-    const copyLink = () => {
-      const url = `${window.location.origin}/post/${post.id}`;
-      navigator.clipboard.writeText(url);
-      toast.success("Link copied!");
     };
     const onComment = ({ postId }) => {
       if (postId === post.id) setCommentsCount((c) => c + 1);
@@ -78,6 +73,12 @@ export default function PostCard({ post, onDelete }) {
     }
   };
 
+  const copyLink = () => {
+    const url = `${window.location.origin}/post/${post.id}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Link copied!");
+  };
+
   return (
     <div className="border border-gray-200 dark:border-gray-800 rounded-lg mb-6 max-w-xl mx-auto bg-white dark:bg-black">
       <div className="flex items-center justify-between p-3">
@@ -109,6 +110,14 @@ export default function PostCard({ post, onDelete }) {
           <Link to={`/post/${post.id}`}>
             <MessageCircle size={26} />
           </Link>
+          {/* Share to DM */}
+          <button onClick={() => setShowShare(true)} title="Share to DM">
+            <Send size={24} />
+          </button>
+          {/* Copy post link */}
+          <button onClick={copyLink} title="Copy link">
+            <Link2 size={22} />
+          </button>
           <button onClick={toggleSave} className="ml-auto">
             <Bookmark size={24} className={savedByMe ? "fill-current" : ""} />
           </button>
@@ -133,6 +142,8 @@ export default function PostCard({ post, onDelete }) {
           {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
         </p>
       </div>
+
+      {showShare && <SharePostModal post={post} onClose={() => setShowShare(false)} />}
     </div>
   );
 }
