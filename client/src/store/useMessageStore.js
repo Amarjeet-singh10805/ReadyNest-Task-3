@@ -37,11 +37,10 @@ export const useMessageStore = create((set, get) => ({
     set((s) => ({ messages: [...s.messages, data] }));
   },
 
-  // REPLACE WITH:
-receiveMessage: (msg) => {
+receiveMessage: (msg, currentUserId) => {
     const convoId = Number(window.location.pathname.split("/messages/")[1]);
-    // only add to messages array if we're currently viewing that conversation
-    if (convoId && msg.conversationId === convoId) {
+    // only add to messages if from the OTHER person (sender already added their own via sendMessage)
+    if (convoId && msg.conversationId === convoId && msg.sender.id !== currentUserId) {
       set((s) => ({ messages: [...s.messages, msg] }));
     }
     // always update sidebar preview
