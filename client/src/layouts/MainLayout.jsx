@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
-import {Home,Search,PlusSquare,Heart,Bookmark,LogOut,MessageSquare,Sun,Moon,User,Menu,X,} from "lucide-react";
+import { Home, Search, PlusSquare, Heart, Bookmark, LogOut, Sun, Moon, User, Menu, X, MessageSquare } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useThemeStore } from "../store/useThemeStore";
 import { useNotificationStore } from "../store/useNotificationStore";
@@ -50,9 +50,6 @@ export default function MainLayout() {
           <NavLink to="/create" className={navItemClass}>
             <PlusSquare size={22} /> Create
           </NavLink>
-          <NavLink to="/messages" className={navItemClass}>
-            <MessageSquare size={22} /> Messages
-          </NavLink>
           <NavLink to="/notifications" className={navItemClass}>
             <Heart size={22} /> Notifications
             {unreadCount > 0 && (
@@ -60,6 +57,9 @@ export default function MainLayout() {
                 {unreadCount}
               </span>
             )}
+          </NavLink>
+          <NavLink to="/messages" className={navItemClass}>
+            <MessageSquare size={22} /> Messages
           </NavLink>
           <NavLink to="/saved" className={navItemClass}>
             <Bookmark size={22} /> Saved
@@ -142,9 +142,6 @@ export default function MainLayout() {
           <NavLink to="/create" className={navItemClass} onClick={closeMenu}>
             <PlusSquare size={22} /> Create Post
           </NavLink>
-          <NavLink to="/messages" className={navItemClass}>
-            <MessageSquare size={22} /> Messages
-          </NavLink>
           <NavLink to="/notifications" className={navItemClass} onClick={closeMenu}>
             <Heart size={22} /> Notifications
             {unreadCount > 0 && (
@@ -152,6 +149,9 @@ export default function MainLayout() {
                 {unreadCount}
               </span>
             )}
+          </NavLink>
+          <NavLink to="/messages" className={navItemClass} onClick={closeMenu}>
+            <MessageSquare size={22} /> Messages
           </NavLink>
           <NavLink to="/saved" className={navItemClass} onClick={closeMenu}>
             <Bookmark size={22} /> Saved
